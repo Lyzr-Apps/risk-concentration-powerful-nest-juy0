@@ -1,0 +1,61 @@
+{
+  "agent_name": "Exposure Data Agent",
+  "agent_id": "6995fe1aa552b02becc38d74",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "geography": {"type": "string"},
+      "total_policy_count": {"type": "number"},
+      "total_insured_value": {"type": "string"},
+      "concentration_score": {"type": "number"},
+      "lob_breakdown": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "line_of_business": {"type": "string"},
+            "policy_count": {"type": "number"},
+            "insured_value": {"type": "string"},
+            "percentage": {"type": "number"}
+          },
+          "required": ["line_of_business", "policy_count", "insured_value", "percentage"],
+          "additionalProperties": false
+        }
+      },
+      "peril_exposures": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "peril_type": {"type": "string"},
+            "exposure_count": {"type": "number"},
+            "tiv": {"type": "string"},
+            "concentration_ratio": {"type": "number"}
+          },
+          "required": ["peril_type", "exposure_count", "tiv", "concentration_ratio"],
+          "additionalProperties": false
+        }
+      },
+      "yoy_growth": {"type": "string"},
+      "threshold_breaches": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "metric": {"type": "string"},
+            "current_value": {"type": "number"},
+            "threshold": {"type": "number"},
+            "severity": {"type": "string"}
+          },
+          "required": ["metric", "current_value", "threshold", "severity"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["geography", "total_policy_count", "total_insured_value", "concentration_score", "lob_breakdown", "peril_exposures", "yoy_growth", "threshold_breaches"],
+    "additionalProperties": false
+  }
+}

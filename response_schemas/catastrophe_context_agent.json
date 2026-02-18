@@ -1,0 +1,65 @@
+{
+  "agent_name": "Catastrophe Context Agent",
+  "agent_id": "6995fe407a06b89d6075ed8a",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "geography": {"type": "string"},
+      "risk_rating": {"type": "number"},
+      "risk_trend": {"type": "string"},
+      "peril_zones": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "peril_type": {"type": "string"},
+            "zone_classification": {"type": "string"},
+            "risk_tier": {"type": "string"},
+            "description": {"type": "string"}
+          },
+          "required": ["peril_type", "zone_classification", "risk_tier", "description"],
+          "additionalProperties": false
+        }
+      },
+      "historical_events": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "event_name": {"type": "string"},
+            "year": {"type": "number"},
+            "loss_amount": {"type": "string"},
+            "peril_type": {"type": "string"},
+            "description": {"type": "string"}
+          },
+          "required": ["event_name", "year", "loss_amount", "peril_type", "description"],
+          "additionalProperties": false
+        }
+      },
+      "model_risk_scores": {
+        "type": "object",
+        "properties": {
+          "rms_score": {"type": "number"},
+          "air_score": {"type": "number"},
+          "corelogic_score": {"type": "number"}
+        },
+        "required": ["rms_score", "air_score", "corelogic_score"],
+        "additionalProperties": false
+      },
+      "return_period_estimates": {
+        "type": "object",
+        "properties": {
+          "one_in_100_year": {"type": "string"},
+          "one_in_250_year": {"type": "string"}
+        },
+        "required": ["one_in_100_year", "one_in_250_year"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["geography", "risk_rating", "risk_trend", "peril_zones", "historical_events", "model_risk_scores", "return_period_estimates"],
+    "additionalProperties": false
+  }
+}

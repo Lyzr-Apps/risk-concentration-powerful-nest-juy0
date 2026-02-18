@@ -1,0 +1,33 @@
+{
+  "agents": {
+    "risk_concentration_coordinator": {
+      "agent_id": "6995fe6832e31923e7a26a7d",
+      "name": "Risk Concentration Coordinator",
+      "type": "manager"
+    },
+    "exposure_data_agent": {
+      "agent_id": "6995fe1aa552b02becc38d74",
+      "name": "Exposure Data Agent",
+      "type": "sub-agent"
+    },
+    "catastrophe_context_agent": {
+      "agent_id": "6995fe407a06b89d6075ed8a",
+      "name": "Catastrophe Context Agent",
+      "type": "sub-agent"
+    },
+    "climate_intelligence_agent": {
+      "agent_id": "6995fe1a5f53eff9118e8e50",
+      "name": "Climate Intelligence Agent",
+      "type": "sub-agent"
+    },
+    "alert_remediation_agent": {
+      "agent_id": "6995fe695f53eff9118e8e56",
+      "name": "Alert & Remediation Agent",
+      "type": "independent"
+    }
+  },
+  "knowledge_base": {
+    "rag_id": "6995fdece12ce168202c2bc7",
+    "rag_name": "catastrophemodeldocumentationm6p5"
+  }
+}

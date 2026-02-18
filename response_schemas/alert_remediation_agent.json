@@ -1,0 +1,58 @@
+{
+  "agent_name": "Alert & Remediation Agent",
+  "agent_id": "6995fe695f53eff9118e8e56",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "analysis_geography": {"type": "string"},
+      "alert_summary": {
+        "type": "object",
+        "properties": {
+          "total_alerts": {"type": "number"},
+          "critical_count": {"type": "number"},
+          "high_count": {"type": "number"},
+          "medium_count": {"type": "number"}
+        },
+        "required": ["total_alerts", "critical_count", "high_count", "medium_count"],
+        "additionalProperties": false
+      },
+      "alerts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "alert_id": {"type": "string"},
+            "severity": {"type": "string"},
+            "zone": {"type": "string"},
+            "peril_type": {"type": "string"},
+            "exposure_value": {"type": "string"},
+            "breach_description": {"type": "string"},
+            "remedial_actions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "action_type": {"type": "string"},
+                  "description": {"type": "string"},
+                  "timeline": {"type": "string"},
+                  "expected_impact": {"type": "string"}
+                },
+                "required": ["action_type", "description", "timeline", "expected_impact"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["alert_id", "severity", "zone", "peril_type", "exposure_value", "breach_description", "remedial_actions"],
+          "additionalProperties": false
+        }
+      },
+      "implementation_timeline": {"type": "string"},
+      "overall_risk_reduction": {"type": "string"}
+    },
+    "required": ["analysis_geography", "alert_summary", "alerts", "implementation_timeline", "overall_risk_reduction"],
+    "additionalProperties": false
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "agent_name": "Alert & Remediation Agent",
+  "agent_id": "6995fe695f53eff9118e8e56",
+  "description": "Analyzes concentration risk profiles against thresholds; generates prioritized alerts and specific remedial action recommendations for underwriting teams",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "analysis_geography": "string",
+    "alert_summary": {
+      "total_alerts": "number",
+      "critical_count": "number",
+      "high_count": "number",
+      "medium_count": "number"
+    },
+    "alerts": [
+      {
+        "alert_id": "string",
+        "severity": "string",
+        "zone": "string",
+        "peril_type": "string",
+        "exposure_value": "string",
+        "breach_description": "string",
+        "remedial_actions": [
+          {
+            "action_type": "string",
+            "description": "string",
+            "timeline": "string",
+            "expected_impact": "string"
+          }
+        ]
+      }
+    ],
+    "implementation_timeline": "string",
+    "overall_risk_reduction": "string"
+  },
+  "example_response": {
+    "analysis_geography": "sample string",
+    "alert_summary": {
+      "total_alerts": 0,
+      "critical_count": 0,
+      "high_count": 0,
+      "medium_count": 0
+    },
+    "alerts": [
+      {
+        "alert_id": "sample string",
+        "severity": "sample string",
+        "zone": "sample string",
+        "peril_type": "sample string",
+        "exposure_value": "sample string",
+        "breach_description": "sample string",
+        "remedial_actions": [
+          {
+            "action_type": "sample string",
+            "description": "sample string",
+            "timeline": "sample string",
+            "expected_impact": "sample string"
+          }
+        ]
+      }
+    ],
+    "implementation_timeline": "sample string",
+    "overall_risk_reduction": "sample string"
+  }
+}

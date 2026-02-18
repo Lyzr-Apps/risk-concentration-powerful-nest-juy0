@@ -1,0 +1,95 @@
+{
+  "agent_name": "Risk Concentration Coordinator",
+  "agent_id": "6995fe6832e31923e7a26a7d",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "geography": {"type": "string"},
+      "overall_risk_rating": {"type": "number"},
+      "executive_summary": {"type": "string"},
+      "exposure_summary": {
+        "type": "object",
+        "properties": {
+          "total_policies": {"type": "number"},
+          "total_insured_value": {"type": "string"},
+          "concentration_score": {"type": "number"},
+          "top_lob": {"type": "string"},
+          "lob_breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "line_of_business": {"type": "string"},
+                "policy_count": {"type": "number"},
+                "insured_value": {"type": "string"},
+                "percentage": {"type": "number"}
+              },
+              "required": ["line_of_business", "policy_count", "insured_value", "percentage"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["total_policies", "total_insured_value", "concentration_score", "top_lob", "lob_breakdown"],
+        "additionalProperties": false
+      },
+      "catastrophe_context": {
+        "type": "object",
+        "properties": {
+          "risk_rating": {"type": "number"},
+          "risk_trend": {"type": "string"},
+          "top_perils": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "historical_loss_summary": {"type": "string"},
+          "return_period_100yr": {"type": "string"},
+          "return_period_250yr": {"type": "string"}
+        },
+        "required": ["risk_rating", "risk_trend", "top_perils", "historical_loss_summary", "return_period_100yr", "return_period_250yr"],
+        "additionalProperties": false
+      },
+      "climate_intelligence": {
+        "type": "object",
+        "properties": {
+          "climate_risk_score": {"type": "number"},
+          "current_conditions": {"type": "string"},
+          "active_warnings": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "emerging_threats": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "seasonal_outlook": {"type": "string"}
+        },
+        "required": ["climate_risk_score", "current_conditions", "active_warnings", "emerging_threats", "seasonal_outlook"],
+        "additionalProperties": false
+      },
+      "threshold_breaches": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "metric": {"type": "string"},
+            "current_value": {"type": "number"},
+            "threshold": {"type": "number"},
+            "severity": {"type": "string"},
+            "zone": {"type": "string"}
+          },
+          "required": ["metric", "current_value", "threshold", "severity", "zone"],
+          "additionalProperties": false
+        }
+      },
+      "recommendations": {
+        "type": "array",
+        "items": {"type": "string"}
+      }
+    },
+    "required": ["geography", "overall_risk_rating", "executive_summary", "exposure_summary", "catastrophe_context", "climate_intelligence", "threshold_breaches", "recommendations"],
+    "additionalProperties": false
+  }
+}

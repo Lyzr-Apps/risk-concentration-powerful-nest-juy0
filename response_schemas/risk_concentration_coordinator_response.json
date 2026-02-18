@@ -1,0 +1,112 @@
+{
+  "agent_name": "Risk Concentration Coordinator",
+  "agent_id": "6995fe6832e31923e7a26a7d",
+  "description": "Coordinates sub-agents to fetch exposure data, catastrophe context, and climate intelligence; aggregates into unified geographic risk concentration profile",
+  "agent_type": "json",
+  "accessor": "result",
+  "auto_generated": true,
+  "response_schema": {
+    "geography": "string",
+    "overall_risk_rating": "number",
+    "executive_summary": "string",
+    "exposure_summary": {
+      "total_policies": "number",
+      "total_insured_value": "string",
+      "concentration_score": "number",
+      "top_lob": "string",
+      "lob_breakdown": [
+        {
+          "line_of_business": "string",
+          "policy_count": "number",
+          "insured_value": "string",
+          "percentage": "number"
+        }
+      ]
+    },
+    "catastrophe_context": {
+      "risk_rating": "number",
+      "risk_trend": "string",
+      "top_perils": [
+        "string"
+      ],
+      "historical_loss_summary": "string",
+      "return_period_100yr": "string",
+      "return_period_250yr": "string"
+    },
+    "climate_intelligence": {
+      "climate_risk_score": "number",
+      "current_conditions": "string",
+      "active_warnings": [
+        "string"
+      ],
+      "emerging_threats": [
+        "string"
+      ],
+      "seasonal_outlook": "string"
+    },
+    "threshold_breaches": [
+      {
+        "metric": "string",
+        "current_value": "number",
+        "threshold": "number",
+        "severity": "string",
+        "zone": "string"
+      }
+    ],
+    "recommendations": [
+      "string"
+    ]
+  },
+  "example_response": {
+    "geography": "sample string",
+    "overall_risk_rating": 0,
+    "executive_summary": "sample string",
+    "exposure_summary": {
+      "total_policies": 0,
+      "total_insured_value": "sample string",
+      "concentration_score": 0,
+      "top_lob": "sample string",
+      "lob_breakdown": [
+        {
+          "line_of_business": "sample string",
+          "policy_count": 0,
+          "insured_value": "sample string",
+          "percentage": 0
+        }
+      ]
+    },
+    "catastrophe_context": {
+      "risk_rating": 0,
+      "risk_trend": "sample string",
+      "top_perils": [
+        "sample string"
+      ],
+      "historical_loss_summary": "sample string",
+      "return_period_100yr": "sample string",
+      "return_period_250yr": "sample string"
+    },
+    "climate_intelligence": {
+      "climate_risk_score": 0,
+      "current_conditions": "sample string",
+      "active_warnings": [
+        "sample string"
+      ],
+      "emerging_threats": [
+        "sample string"
+      ],
+      "seasonal_outlook": "sample string"
+    },
+    "threshold_breaches": [
+      {
+        "metric": "sample string",
+        "current_value": 0,
+        "threshold": 0,
+        "severity": "sample string",
+        "zone": "sample string"
+      }
+    ],
+    "recommendations": [
+      "sample string"
+    ]
+  }
+}

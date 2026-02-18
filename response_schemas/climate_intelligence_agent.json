@@ -1,0 +1,58 @@
+{
+  "agent_name": "Climate Intelligence Agent",
+  "agent_id": "6995fe1a5f53eff9118e8e50",
+  "agent_type": "json",
+  "accessor": "json",
+  "has_module_outputs": false,
+  "response_schema": {
+    "type": "object",
+    "properties": {
+      "geography": {"type": "string"},
+      "climate_risk_score": {"type": "number"},
+      "current_conditions": {
+        "type": "object",
+        "properties": {
+          "temperature": {"type": "string"},
+          "conditions": {"type": "string"},
+          "active_warnings": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "required": ["temperature", "conditions", "active_warnings"],
+        "additionalProperties": false
+      },
+      "climate_trends": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "trend_type": {"type": "string"},
+            "direction": {"type": "string"},
+            "impact": {"type": "string"},
+            "confidence": {"type": "string"}
+          },
+          "required": ["trend_type", "direction", "impact", "confidence"],
+          "additionalProperties": false
+        }
+      },
+      "emerging_warnings": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "threat_type": {"type": "string"},
+            "severity": {"type": "string"},
+            "description": {"type": "string"},
+            "timeline": {"type": "string"}
+          },
+          "required": ["threat_type", "severity", "description", "timeline"],
+          "additionalProperties": false
+        }
+      },
+      "seasonal_outlook": {"type": "string"}
+    },
+    "required": ["geography", "climate_risk_score", "current_conditions", "climate_trends", "emerging_warnings", "seasonal_outlook"],
+    "additionalProperties": false
+  }
+}
