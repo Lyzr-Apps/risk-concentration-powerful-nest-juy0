@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { callAIAgent } from '@/lib/aiAgent'
 import {
   FiAlertTriangle, FiMapPin, FiShield, FiActivity, FiTrendingUp,
-  FiClock, FiSearch, FiChevronRight, FiChevronDown, FiDownload,
+  FiClock, FiSearch, FiChevronRight, FiDownload,
   FiRefreshCw, FiBarChart2, FiLayers, FiAlertCircle, FiCheckCircle,
-  FiXCircle, FiInfo, FiMenu, FiX, FiHome, FiFileText, FiList
+  FiXCircle, FiInfo, FiMenu, FiX, FiHome, FiList
 } from 'react-icons/fi'
 
 // ============================================================
@@ -150,14 +150,16 @@ type Screen = 'dashboard' | 'analysis' | 'alerts' | 'history'
 // HELPER COMPONENTS
 // ============================================================
 function RiskGauge({ value, max = 10, label }: { value: number; max?: number; label: string }) {
-  const pct = Math.min((value / max) * 100, 100)
+  const safeValue = Number(value) || 0
+  const safeMax = Number(max) || 10
+  const pct = Math.min((safeValue / safeMax) * 100, 100)
   const color = pct >= 70 ? 'text-red-600' : pct >= 40 ? 'text-orange-500' : 'text-green-600'
   const barColor = pct >= 70 ? 'bg-red-500' : pct >= 40 ? 'bg-orange-400' : 'bg-green-500'
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-muted-foreground">{label}</span>
-        <span className={`text-sm font-bold ${color}`}>{value}/{max}</span>
+        <span className={`text-sm font-bold ${color}`}>{safeValue}/{safeMax}</span>
       </div>
       <div className="h-2 bg-secondary rounded-full overflow-hidden">
         <div className={`h-full ${barColor} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
@@ -321,17 +323,24 @@ export default function Page() {
   const [historySearch, setHistorySearch] = useState('')
   const [selectedHistory, setSelectedHistory] = useState<HistoryEntry | null>(null)
 
+  // History ref to avoid stale closures
+  const historyRef = useRef<HistoryEntry[]>([])
+  historyRef.current = history
+
   // Load history from localStorage
   useEffect(() => {
     try {
       const stored = localStorage.getItem('catrisk_history')
-      if (stored) setHistory(JSON.parse(stored))
-    } catch { /* empty */ }
+      if (stored) {
+        const parsed = JSON.parse(stored)
+        if (Array.isArray(parsed)) setHistory(parsed)
+      }
+    } catch (_e) { /* ignore */ }
   }, [])
 
   const saveHistory = useCallback((entries: HistoryEntry[]) => {
     setHistory(entries)
-    try { localStorage.setItem('catrisk_history', JSON.stringify(entries)) } catch { /* empty */ }
+    try { localStorage.setItem('catrisk_history', JSON.stringify(entries)) } catch (_e) { /* ignore */ }
   }, [])
 
   // ============================================================
@@ -365,27 +374,39 @@ export default function Page() {
       clearInterval(interval)
 
       if (result.success && result.response?.result) {
-        const data = result.response.result as unknown as RiskConcentrationData
+        const rawData = result.response.result
+        // Safely cast with fallbacks for all nested objects
+        const data: RiskConcentrationData = {
+          geography: rawData?.geography || geo,
+          overall_risk_rating: rawData?.overall_risk_rating || 0,
+          executive_summary: rawData?.executive_summary || '',
+          exposure_summary: rawData?.exposure_summary || { total_policies: 0, total_insured_value: 'N/A', concentration_score: 0, top_lob: 'N/A', lob_breakdown: [] },
+          catastrophe_context: rawData?.catastrophe_context || { risk_rating: 0, risk_trend: 'N/A', top_perils: [], historical_loss_summary: '', return_period_100yr: 'N/A', return_period_250yr: 'N/A' },
+          climate_intelligence: rawData?.climate_intelligence || { climate_risk_score: 0, current_conditions: '', active_warnings: [], emerging_threats: [], seasonal_outlook: '' },
+          threshold_breaches: Array.isArray(rawData?.threshold_breaches) ? rawData.threshold_breaches : [],
+          recommendations: Array.isArray(rawData?.recommendations) ? rawData.recommendations : [],
+        }
         setConcentrationData(data)
         setAlertGeography(data.geography || geo)
         setScreen('analysis')
 
         // Save to history
+        const breaches = data.threshold_breaches
         const entry: HistoryEntry = {
           id: Date.now().toString(),
           date: new Date().toISOString(),
           geography: data.geography || geo,
-          alertCount: Array.isArray(data.threshold_breaches) ? data.threshold_breaches.length : 0,
-          highestSeverity: Array.isArray(data.threshold_breaches) && data.threshold_breaches.length > 0
-            ? data.threshold_breaches.reduce((max, b) => {
+          alertCount: breaches.length,
+          highestSeverity: breaches.length > 0
+            ? breaches.reduce((max, b) => {
                 const order: Record<string, number> = { critical: 3, Critical: 3, high: 2, High: 2, medium: 1, Medium: 1 }
                 return (order[b.severity] || 0) > (order[max] || 0) ? b.severity : max
-              }, data.threshold_breaches[0].severity)
+              }, breaches[0]?.severity || 'Medium')
             : 'None',
           status: 'Pending',
           concentrationData: data,
         }
-        saveHistory([entry, ...history].slice(0, 50))
+        saveHistory([entry, ...historyRef.current].slice(0, 50))
       } else {
         setAnalysisError(result.error || result.response?.message || 'Analysis failed. Please try again.')
       }
@@ -396,7 +417,7 @@ export default function Page() {
 
     setLoading(false)
     setLoadingStep('')
-  }, [history, saveHistory])
+  }, [saveHistory])
 
   const handleGenerateAlerts = useCallback(async (geo: string) => {
     if (!geo.trim()) return
@@ -413,14 +434,30 @@ export default function Page() {
       const result = await callAIAgent(contextMsg, AGENT_IDS.ALERT_REMEDIATION)
 
       if (result.success && result.response?.result) {
-        const data = result.response.result as unknown as AlertRemediationData
+        const rawData = result.response.result
+        const data: AlertRemediationData = {
+          analysis_geography: rawData?.analysis_geography || geo,
+          alert_summary: rawData?.alert_summary || { total_alerts: 0, critical_count: 0, high_count: 0, medium_count: 0 },
+          alerts: Array.isArray(rawData?.alerts) ? rawData.alerts.map((a: Record<string, unknown>) => ({
+            alert_id: a?.alert_id || String(Math.random()),
+            severity: a?.severity || 'Medium',
+            zone: a?.zone || '',
+            peril_type: a?.peril_type || '',
+            exposure_value: a?.exposure_value || '',
+            breach_description: a?.breach_description || '',
+            remedial_actions: Array.isArray(a?.remedial_actions) ? a.remedial_actions : [],
+          })) : [],
+          implementation_timeline: rawData?.implementation_timeline || 'N/A',
+          overall_risk_reduction: rawData?.overall_risk_reduction || 'N/A',
+        }
         setAlertData(data)
         setScreen('alerts')
 
         // Update history
-        const updated = history.map(h =>
+        const currentHistory = historyRef.current
+        const updated = currentHistory.map(h =>
           h.geography === geo && h.status === 'Pending'
-            ? { ...h, alertData: data, alertCount: data.alert_summary?.total_alerts || 0, highestSeverity: data.alert_summary?.critical_count > 0 ? 'Critical' : data.alert_summary?.high_count > 0 ? 'High' : 'Medium' }
+            ? { ...h, alertData: data, alertCount: data.alert_summary?.total_alerts || 0, highestSeverity: (data.alert_summary?.critical_count || 0) > 0 ? 'Critical' : (data.alert_summary?.high_count || 0) > 0 ? 'High' : 'Medium' }
             : h
         )
         saveHistory(updated)
@@ -432,7 +469,7 @@ export default function Page() {
     }
 
     setAlertLoading(false)
-  }, [concentrationData, history, saveHistory])
+  }, [concentrationData, saveHistory])
 
   const exportAlerts = useCallback(() => {
     if (!alertData) return
@@ -715,12 +752,12 @@ export default function Page() {
                         {concentrationData.exposure_summary.lob_breakdown.map((lob, i) => (
                           <div key={i} className="space-y-1">
                             <div className="flex justify-between text-xs">
-                              <span className="font-medium">{lob.line_of_business}</span>
-                              <span className="text-muted-foreground">{lob.percentage}% - {lob.insured_value}</span>
+                              <span className="font-medium">{lob.line_of_business || 'Unknown'}</span>
+                              <span className="text-muted-foreground">{lob.percentage ?? 0}% - {lob.insured_value || 'N/A'}</span>
                             </div>
                             <div className="h-2 bg-secondary rounded-full overflow-hidden">
                               <div className="h-full bg-primary/70 rounded-full transition-all duration-700"
-                                style={{ width: `${Math.min(lob.percentage, 100)}%` }} />
+                                style={{ width: `${Math.min(Number(lob.percentage) || 0, 100)}%` }} />
                             </div>
                           </div>
                         ))}
